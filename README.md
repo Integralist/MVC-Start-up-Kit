@@ -26,7 +26,7 @@ TODO
 
 I've only just started working on it so there is LOTS to do still...
 
+* Add timed Array to updateView method (and use Deferred/Promises to handle asynchronous processing)
+* Work on basic template engine
 * I need to look into using Observer design pattern as a way for the Model to publish events and for the Views to subscribe to these.
-* I need to set-up a MVC.js file where we can polyfill Object.create() and set-up inheritance for Controllers/Models
-* I need to write a basic template engine for updating the Views
 * +many other things I've not yet considered that will come back and bite me in the ass!

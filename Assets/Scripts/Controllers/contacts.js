@@ -1,33 +1,30 @@
-define(['jquery'], function($){
+define(['Controllers/Controller', 'jquery'], function(C, $){
 	
-	var Controller = {
+	// We first create a new Controller that inherits from the top-level Controller object (C)
+	var Controller = Object.create(C);
+	
+	// Each Controller instance needs to have a 'view' associated with it
+	// We do this by creating an instance property (i.e. is only available on this instance)
+	Controller.view = 'view-contacts';
+	
+	// Extend the default stub 'updateView' method
+	Controller.updateView = function(data) {
 		
-		init: function(model) {
-			var self = this;
+		var doc = document,
+			container = doc.getElementById(this.view),
+			select = container.getElementsByTagName('select')[0],
+			option = doc.createElement('option');
+		
+		// Loop through each record and take it's content and apply it to the page
+		for (var i = 0, len = data.length; i < len; i++) {
+			var opt = option.cloneNode(),
+				txt = doc.createTextNode(data[i].name);
 			
-			// The Controller tells the Model it needs to grab data from the server
-			// Note: originally I had the 'getModelData' method inside the Controller but discovered this was a 'bad practice'
-			// and that the Model should be solely responsible for grabbing its own data (the Controller simply tells it 'when')
-			model.getModelData()
-				.then(function(data){
-					// Populate the Model with the server data
-					model.populate(data)
-						// Update the View to display the data
-						.then(function(storedData){
-							self.updateView('view', storedData);
-						});
-				})
-				.fail(function(err){
-					console.log('fail? ', err);
-				});
-		},
-		
-		updateView: function(element_id, data) {
-			var doc = document,
-				container = doc.getElementById(element_id),
-				select = container.getElementsByTagName('select')[0];
-			console.log(select, data);
+			opt.appendChild(txt);
+			select.appendChild(opt);
 		}
+		
+		console.log(this.template(container.innerHTML, { name: 'Mark', age: '29', address: '9 Cables Street, London' }));
 		
 	}
 		
