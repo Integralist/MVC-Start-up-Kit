@@ -53,7 +53,7 @@ define(function(){
 			 * Because there is potential for the data-set to be very large
 			 * we need to use a timer to split the long array into chunks.
 			 */
-			window.setTimeout(function timer(){
+			window.setTimeout(function timer() {
 				var start = +new Date();
 			
 				// Process the current Array 
