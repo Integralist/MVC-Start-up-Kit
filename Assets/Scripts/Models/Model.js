@@ -1,7 +1,7 @@
-// We could specify jQuery, pubsub and polyfills as dependancies via the top level init.js file (as they are used throughout all modules), 
+// We could specify Standardizer, pubsub and polyfills as dependancies via the top level init.js file (as they are used throughout all modules), 
 // but then if we move this specific module to another project then it wouldn't be clear what its dependancies were!
 // RequireJs prevents the same module/dependancy from being loaded twice so it doesn't hurt to do this.
-define(['jquery', 'Utils/pubsub', 'Utils/polyfills'], function(){
+define(['Utils/standardizer', 'Utils/when', 'Utils/pubsub', 'Utils/polyfills'], function(st, when, ps){
 
 	// This is our standard Model object (all new Model instances will inherit the following methods)
 	
@@ -9,16 +9,16 @@ define(['jquery', 'Utils/pubsub', 'Utils/polyfills'], function(){
 		
 		// @description: this method grabs the data for this model
 		getModelData: function(path) {
-			var dfd = $.Deferred(),
-				data = $.ajax({
+			var dfd = when.defer(),
+				data = st.load({
 					type: 'GET',
 					url: path,
 					dataType: 'json',
-					error: dfd.reject,
-					success: dfd.resolve
+					onError: dfd.reject,
+					onSuccess: dfd.resolve
 				});
 				
-			return dfd.promise();
+			return dfd.promise;
 		},
 		
 		// @description: this method generates a unique ID for each record in this Model
@@ -32,7 +32,7 @@ define(['jquery', 'Utils/pubsub', 'Utils/polyfills'], function(){
 		// @note: We've assumed this to be an Array (i.e. JSON data)
 		// I might have to re-investigate this because PHP at the moment wraps the object in an [] but that might not always be the case!
 		populate: function(data) {
-			var dfd = $.Deferred(),
+			var dfd = when.defer(),
 				self = this, // the setTimeout causes the scope of 'this' (within the callback) to be lost
 				todo = data.concat(); // create a clone of the original
 			
@@ -80,7 +80,7 @@ define(['jquery', 'Utils/pubsub', 'Utils/polyfills'], function(){
 			
 			// As this function is going to be executing asynchronously (due to the timed Array processing)
 		 	// we'll be using Deferreds/Promises to help keep the UI from locking up
-			return dfd.promise();
+			return dfd.promise;
 		},
 		
 		// @description: this function is for adding a single record only
@@ -88,7 +88,7 @@ define(['jquery', 'Utils/pubsub', 'Utils/polyfills'], function(){
 			this.store.push(data);
 			
 			// Also publish an event to any views who are subscribed (passing through the new record data)
-        	$.publish('newrecord', data);
+        	ps.publish('newrecord', data);
 		},
 		
 		// @description: this function returns total number of records

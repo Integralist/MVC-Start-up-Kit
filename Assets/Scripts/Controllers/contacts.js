@@ -1,4 +1,5 @@
-define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], function(C, $){
+// Event listeners need replacement (function L196)
+define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pubsub', 'Utils/polyfills'], function(C, st, when, ps){
 	
 	// We first create a new Controller that inherits from the top-level Controller object (C)
 	var Controller = Object.create(C);
@@ -11,7 +12,7 @@ define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], 
 	// Extend the default stub 'updateView' method
 	Controller.updateView = function(data) {
 		
-		var dfd = $.Deferred(),
+		var dfd = when.defer(),
 			doc = document;
 			
 		// Loop through the views and store the elements
@@ -62,7 +63,7 @@ define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], 
 	            setTimeout(timer, 25);
 	        } else {
 	        	// Show the View
-	        	$(container).removeClass('hide');
+	        	st.css.removeClass(container, 'hide');
 	        	
 	        	// Pass through the callback we want executed (or leave empty if no callback needed)
 	        	dfd.resolve(self.bindEvents);
@@ -71,7 +72,7 @@ define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], 
 		
 		// As this function is going to be executing asynchronously (due to the timed Array processing)
 	 	// we'll be using Deferreds/Promises to help keep the UI from locking up
-		return dfd.promise();
+		return dfd.promise;
 		
 	};
 	
@@ -81,7 +82,8 @@ define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], 
 		select: function(e, template) {
 			
 			// Find out which Contact was selected
-			var id = this.options[this.selectedIndex].id.split('_')[1],
+			var targ = e.target,
+				id = targ.options[targ.selectedIndex].id.split('_')[1],
 				doc = document,
 				contact = doc.getElementById('tmpl_contact'),
 				self = Controller;
@@ -119,6 +121,7 @@ define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], 
 		},
 		
 		submit: function(e) {
+			
 			// In this handler we validate the data entered and then 
 			// post data to server via AJAX and let server-side store posted data in database.
 			// Then on success we update our local store property (and also use localStorage if we wanted to)
@@ -187,6 +190,7 @@ define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], 
 				div.appendChild(txt);
 				form.appendChild(div);
 			}
+			
 		}
 		
 	};
@@ -195,42 +199,37 @@ define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], 
 	Controller.bindEvents = function() {
 		
 		var self = this,
-			// I wrap these elements in jQuery simply because I like using their delegate() method
-			ViewContact = $(this.views[0]),
-			ViewAdd = $(this.views[1]);
+			ViewContact = this.views[0],
+			ViewAdd = this.views[1];
 		
 		// First we grab the Template we need to use for the View
 		this.getTemplate('Contacts.tmpl').then(function(template) {
 			
 			// Bind an event listener to the <select> menu so we can load in the appropriate data
-			ViewContact.delegate('select', 'change', function(e) {
-				// The context of 'this' is lost when just calling handler()
-				// So we have to manually specify the context of 'this' using handler.call() instead.
-				// So effectively we're telling 'this' to be equal to the <select> element
-				self.handleEvents.select.call(this, e, template);
+			st.events.add(ViewContact.getElementsByTagName('select')[0], 'change', function(e){
+				// We're using an anonymous function to call the relevant handler because 
+				// we also need to pass through the 'template' object
+				self.handleEvents.select(e, template);
 			});
 			
 		});
 		
-		// Let user add a new record
-		ViewAdd.on('submit', function(e) {
-			self.handleEvents.submit.call(this, e);
-			e.preventDefault();
-		});
+		// Then we bind a listener to the form (for when the user adds a new user/record)
+		st.events.add(ViewAdd, 'submit', self.handleEvents.submit);
 		
 	}
 	
 	// SUBSCRIBERS: the following are all the subscribers for this Controller/Model set-up
 	
 	// A single function has subscribed to the event triggered when a new record is added
-	$.subscribe('newrecord', newRecordData);
+	ps.subscribe('newrecord', newRecordData);
 	
 	// @note: The data passed through (if an Array) gets split into separate arguments!?
 	// So the best way to access entire chunk of data is via the function's arguments object. 
 	// Otherwise we'd have to manually specify the same number of arguments as items in the Array. 
 	// Which in a dynamic system isn't possible as the number of items would be unknown.
 	// Also, using 'arguments' wont long be supported in Js if the 'use strict' directive is also used.
-	function newRecordData(record) {
+	function newRecordData(topic, record) {
 		var select = Controller.views[0].getElementsByTagName('select')[0],
 			id = Controller.Model.getTotal(), // we give the <option> we add the same id value as the total number of records
 			doc = document, 

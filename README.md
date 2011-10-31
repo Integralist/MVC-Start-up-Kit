@@ -1,4 +1,4 @@
-[Integralist](http://www.integralist.co.uk/) - MVC Start-up Kit
+[Integralist](http://www.integralist.co.uk/) - MVC Start-up Kit (Library agnostic version - check branches for jQuery version)
 ================================
 
 Description
@@ -21,8 +21,8 @@ Goals/Features
 * Very simple/logical folder structure (I don't like complicated set-ups)
 * Modular (built to comply with the AMD specification and uses RequireJs - if you're new to AMD or RequireJs then this post will help explain: http://integralist.co.uk/post/11705798780/beginners-guide-to-amd-and-requirejs)
 * Basic template engine.
-* Publisher/Subscriber event system.
-* Utilises Deferred/Promises for asynchronous tasks.
+* Publisher/Subscriber event system (via https://github.com/addyosmani/pubsubz).
+* Utilises Deferred/Promises for asynchronous tasks (via https://github.com/briancavalier/when.js).
 * Easy to understand (I heavily comment my code, with the understanding that comments will be stripped at deployment via a 'build script'. See the RequireJs optimiser information in the above article link)
 * Tried to wrap certain implementations features so it becomes easier to swap out the implementation for your own or another library
 * Tried to keep a balance between static features/methods/properties (i.e. those that appear on all instances of a Controller) and instance specific features/methods/properties (this was so to help automate as much of the standard set-up as possible).
