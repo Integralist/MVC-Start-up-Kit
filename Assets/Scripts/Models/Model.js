@@ -1,4 +1,7 @@
-define(function(){
+// We could specify jQuery, pubsub and polyfills as dependancies via the top level init.js file (as they are used throughout all modules), 
+// but then if we move this specific module to another project then it wouldn't be clear what its dependancies were!
+// RequireJs prevents the same module/dependancy from being loaded twice so it doesn't hurt to do this.
+define(['jquery', 'Utils/pubsub', 'Utils/polyfills'], function(){
 
 	// This is our standard Model object (all new Model instances will inherit the following methods)
 	
@@ -26,6 +29,8 @@ define(function(){
 		},
 		
 		// @description: this method populates the Model with its retrieved data (see: getModelData)
+		// @note: We've assumed this to be an Array (i.e. JSON data)
+		// I might have to re-investigate this because PHP at the moment wraps the object in an [] but that might not always be the case!
 		populate: function(data) {
 			var dfd = $.Deferred(),
 				self = this, // the setTimeout causes the scope of 'this' (within the callback) to be lost
@@ -69,13 +74,26 @@ define(function(){
 		            setTimeout(timer, 25);
 		        } else {
 		        	// We pass through the populated data to the resolver
-		            dfd.resolve(self.store);
+		        	dfd.resolve(self.store);
 		        }				
 			}, 25);
 			
 			// As this function is going to be executing asynchronously (due to the timed Array processing)
 		 	// we'll be using Deferreds/Promises to help keep the UI from locking up
 			return dfd.promise();
+		},
+		
+		// @description: this function is for adding a single record only
+		add: function(data) {
+			this.store.push(data);
+			
+			// Also publish an event to any views who are subscribed (passing through the new record data)
+        	$.publish('newrecord', data);
+		},
+		
+		// @description: this function returns total number of records
+		getTotal: function() {
+			return this.store.length;
 		},
 		
 		// @description: this property is for storing data records in the Model

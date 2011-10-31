@@ -8,6 +8,9 @@ define(function(){
 		init: function(model) {
 			var self = this;
 			
+			// We'll store the Model so we have constant access to it
+			this.Model = model;
+			
 			// The Controller tells the Model it needs to grab data from the server
 			// Note: originally I had the 'getModelData' method inside the Controller but discovered this was a 'bad practice'
 			// and that the Model should be solely responsible for grabbing its own data (the Controller simply tells it 'when')
@@ -23,8 +26,7 @@ define(function(){
 						if (!!callback) {
 							// We need to make sure the callback is executed with the Controller instance as the 'this' context
 							// Otherwise 'this' would be the DOMWindow
-							// We also pass through a reference to the Model so we have access to it
-							callback.call(self, model);
+							callback.call(self);
 						}
 					});
 						

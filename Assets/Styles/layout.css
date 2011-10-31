@@ -5,3 +5,21 @@ body {
 .hide {
 	display: none;
 }
+
+#view-add {
+	border: 1px solid #999;
+	left: 230px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+	position: absolute;
+	top: 10px;
+	width: 150px;
+}
+
+#view-add div {
+	background-color: green;
+	color: #fff;
+	margin-right: 10px;
+	margin-top: 10px;
+	padding: 10px;
+}
