@@ -27,10 +27,3 @@ Goals/Features
 * Tried to wrap certain implementations features so it becomes easier to swap out the implementation for your own or another library
 * Tried to keep a balance between static features/methods/properties (i.e. those that appear on all instances of a Controller) and instance specific features/methods/properties (this was so to help automate as much of the standard set-up as possible).
 * Two versions - one jQuery (as it makes this repo more appealing - I'm guessing - to jQuery users) and one which is library agnostic (I'm only using jQuery for: Simple PubSub + Deferred/Promises + basic event handling so is simple to swap out)
-
-TODO
-----
-
-There is still bits and pieces I need to work on...
-
-* Make a library agnostic version (e.g. no jQuery) - this wont take long I just need to find the time.
