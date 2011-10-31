@@ -96,7 +96,6 @@ define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], 
 			
 			// If we've already added a template Contact to the View then just update it
 			else if (!!contact) {
-				console.log(id, contact, Controller.Model.store, Controller.Model.store[3]);
 				// Add the new template
 				contact.innerHTML = self.template(template, Controller.Model.store[id]);
 			} 
