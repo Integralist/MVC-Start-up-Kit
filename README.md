@@ -1,4 +1,4 @@
-[Integralist](http://www.integralist.co.uk/) - MVC Start-up Kit
+[Integralist](http://www.integralist.co.uk/) - MVC Start-up Kit (jQuery version - check branches for Library Agnostic version)
 ================================
 
 Description
