@@ -1,5 +1,7 @@
-[Integralist](http://www.integralist.co.uk/) - MVC Start-up Kit (Library agnostic version - check branches for jQuery version)
+MVC Start-up Kit (library agnostic version)
 ================================
+
+Check branches for jQuery version.
 
 Description
 -----------
@@ -13,7 +15,9 @@ I found that full scale frameworks such as JavaScriptMVC, Backbone and Spine are
 
 So in typical programmer fashion, I decided to 'roll my own' (once I have this in a more stable state then I'll write up an article about it all).
 
-I find this start-up kit gets me up and running very quickly utilising the MVC paradigm without loads of extra cruft I'm never going to use.
+I find this start-up kit gets me up and running very quickly utilising the MVC paradigm without loads of extra cruft I'm never going to use. But be aware that I had a very specific API design in mind when writing this library and so this might not necessarily work for every one.
+
+There is lots to do with this project to get it to a stage where it's anywhere near production ready, but it was very interesting researching and building it.
 
 Goals/Features
 --------------
