@@ -1,5 +1,7 @@
-[Integralist](http://www.integralist.co.uk/) - MVC Start-up Kit (jQuery version - check branches for Library Agnostic version)
+MVC Start-up Kit (jQuery version)
 ================================
+
+Check branches for Library Agnostic version.
 
 Description
 -----------
@@ -13,13 +15,15 @@ I found that full scale frameworks such as JavaScriptMVC, Backbone and Spine are
 
 So in typical programmer fashion, I decided to 'roll my own' (once I have this in a more stable state then I'll write up an article about it all).
 
-I find this start-up kit gets me up and running very quickly utilising the MVC paradigm without loads of extra cruft I'm never going to use.
+I find this start-up kit gets me up and running very quickly utilising the MVC paradigm without loads of extra cruft I'm never going to use. But be aware that I had a very specific API design in mind when writing this library and so this might not necessarily work for every one.
+
+There is lots to do with this project to get it to a stage where it's anywhere near production ready, but it was very interesting researching and building it.
 
 Goals/Features
 --------------
 
 * Very simple/logical folder structure (I don't like complicated set-ups)
-* Modular (built to comply with the AMD specification and uses RequireJs - if you're new to AMD or RequireJs then this post will help explain: http://integralist.co.uk/post/11705798780/beginners-guide-to-amd-and-requirejs)
+* Modular (built to comply with the AMD specification and uses RequireJs - if you're new to AMD or RequireJs then this post will help explain: [Beginners Guide to AMD and RequireJs](https://github.com/Integralist/Blog-Posts/blob/master/Beginners-guide-to-AMD-and-RequireJs.md))
 * Basic template engine.
 * Publisher/Subscriber event system.
 * Utilises Deferred/Promises for asynchronous tasks.
