@@ -32,8 +32,3 @@
 ehthumbs.db
 Icon?
 Thumbs.db
-
-# Uneeded folders #
-######################
-
-/Archive (Class Inheritance)/*

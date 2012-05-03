@@ -1,4 +1,4 @@
-define(['Models/Model', 'Utils/polyfills'], function(M){
+define(['../Models/Model', '../Utils/Polyfills/object'], function (M) {
 	
 	// We first create a new Model that inherits from the top-level Model object (M)
 	var Model = Object.create(M)

@@ -1,5 +1,4 @@
-// Event listeners need replacement (function L196)
-define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pubsub', 'Utils/polyfills'], function(C, st, when, ps){
+define(['../Controllers/Controller', '../Utils/Events/events', '../Utils/CSS/removeClass', '../Utils/Libraries/when', '../Utils/Libraries/pubsub', '../Utils/Polyfills/object'], function (C, events, removeClass, when, ps) {
 	
 	// We first create a new Controller that inherits from the top-level Controller object (C)
 	var Controller = Object.create(C);
@@ -10,7 +9,7 @@ define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pub
 	Controller.views = ['view-contacts', 'view-add'];
 	
 	// Extend the default stub 'updateView' method
-	Controller.updateView = function(data) {
+	Controller.updateView = function (data) {
 		
 		var dfd = when.defer(),
 			doc = document;
@@ -32,8 +31,8 @@ define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pub
 			todo = data.concat(); // create a clone of the original;
 			
 		// Take content from currently passed through record and apply it to the page
-		function process(record) {
-			var opt = option.cloneNode(),
+		function process (record) {
+			var opt = option.cloneNode(false),
 				txt = doc.createTextNode(record.name);
 				
 			// This helps us keep track of which <option> was selected
@@ -63,7 +62,7 @@ define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pub
 	            setTimeout(timer, 25);
 	        } else {
 	        	// Show the View
-	        	st.css.removeClass(container, 'hide');
+	        	removeClass(container, 'hide');
 	        	
 	        	// Pass through the callback we want executed (or leave empty if no callback needed)
 	        	dfd.resolve(self.bindEvents);
@@ -79,7 +78,7 @@ define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pub
 	// An instance object (e.g. only available on this Controller instance) for handling the event listeners
 	Controller.handleEvents = {
 	
-		select: function(e, template) {
+		select: function (e, template) {
 			
 			// Find out which Contact was selected
 			var targ = e.target,
@@ -90,7 +89,7 @@ define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pub
 			
 			// If the user has selected a non-Contact (e.g. selected the option 'Please select a user')
 			// then we need to make sure we just display nothing (or a generic message)
-			if(id === undefined) {
+			if (id === undefined) {
 				// The user can only reach this condition if they have already displayed a valid Contact
 				// so we know that we can just use innerHTML on the 'contact' variable
 				contact.innerHTML = '';
@@ -120,7 +119,7 @@ define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pub
 			
 		},
 		
-		submit: function(e) {
+		submit: function (e) {
 			
 			// In this handler we validate the data entered and then 
 			// post data to server via AJAX and let server-side store posted data in database.
@@ -196,17 +195,17 @@ define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pub
 	};
 	
 	// An instance method (e.g. only available on this Controller instance) for setting-up event listeners for the specified View(s)
-	Controller.bindEvents = function() {
+	Controller.bindEvents = function(){
 		
 		var self = this,
 			ViewContact = this.views[0],
 			ViewAdd = this.views[1];
 		
 		// First we grab the Template we need to use for the View
-		this.getTemplate('Contacts.tmpl').then(function(template) {
+		this.getTemplate('Contacts.tmpl').then(function (template) {
 			
 			// Bind an event listener to the <select> menu so we can load in the appropriate data
-			st.events.add(ViewContact.getElementsByTagName('select')[0], 'change', function(e){
+			events.add(ViewContact.getElementsByTagName('select')[0], 'change', function (e) {
 				// We're using an anonymous function to call the relevant handler because 
 				// we also need to pass through the 'template' object
 				self.handleEvents.select(e, template);
@@ -215,7 +214,7 @@ define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pub
 		});
 		
 		// Then we bind a listener to the form (for when the user adds a new user/record)
-		st.events.add(ViewAdd, 'submit', self.handleEvents.submit);
+		events.add(ViewAdd, 'submit', self.handleEvents.submit);
 		
 	}
 	
@@ -229,7 +228,7 @@ define(['Controllers/Controller', 'Utils/standardizer', 'Utils/when', 'Utils/pub
 	// Otherwise we'd have to manually specify the same number of arguments as items in the Array. 
 	// Which in a dynamic system isn't possible as the number of items would be unknown.
 	// Also, using 'arguments' wont long be supported in Js if the 'use strict' directive is also used.
-	function newRecordData(topic, record) {
+	function newRecordData (topic, record) {
 		var select = Controller.views[0].getElementsByTagName('select')[0],
 			id = Controller.Model.getTotal(), // we give the <option> we add the same id value as the total number of records
 			doc = document, 
