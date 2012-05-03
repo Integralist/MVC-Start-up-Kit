@@ -1,4 +1,4 @@
-define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], function(C, $){
+define(['../Controllers/Controller', 'jquery', '../Utils/Libraries/pubsub', '../Utils/Polyfills/object'], function (C, $) {
 	
 	// We first create a new Controller that inherits from the top-level Controller object (C)
 	var Controller = Object.create(C);
@@ -32,7 +32,7 @@ define(['Controllers/Controller', 'jquery', 'Utils/pubsub', 'Utils/polyfills'], 
 			
 		// Take content from currently passed through record and apply it to the page
 		function process(record) {
-			var opt = option.cloneNode(),
+			var opt = option.cloneNode(false),
 				txt = doc.createTextNode(record.name);
 				
 			// This helps us keep track of which <option> was selected

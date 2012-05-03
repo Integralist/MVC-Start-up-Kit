@@ -1,7 +1,7 @@
 // We could specify jQuery, pubsub and polyfills as dependancies via the top level init.js file (as they are used throughout all modules), 
 // but then if we move this specific module to another project then it wouldn't be clear what its dependancies were!
 // RequireJs prevents the same module/dependancy from being loaded twice so it doesn't hurt to do this.
-define(['jquery', 'Utils/pubsub', 'Utils/polyfills'], function(){
+define(['jquery', '../Utils/Libraries/pubsub', '../Utils/Polyfills/guid'], function(){
 
 	// This is our standard Model object (all new Model instances will inherit the following methods)
 	

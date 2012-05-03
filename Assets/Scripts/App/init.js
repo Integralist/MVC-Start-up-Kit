@@ -1,12 +1,12 @@
 // We need to define jQuery as a 'named module' so we can specify it as a dependancy
 require.config({ 
 	paths : { 
-		'jquery' : 'Utils/jquery'
+		'jquery' : '../Utils/Libraries/jquery'
 	} 
 });
 
 // The polyfill module doesn't return any data so we don't pass an arguments through for it
-require(['Controllers/contacts', 'Models/contacts', 'Utils/polyfills'], function(Controller, Model){
+require(['../Controllers/contacts', '../Models/contacts'], function (Controller, Model) {
 	
 	// After all our dependancies are loaded then we initialise the relevant Controller(s) for this page.
 	Controller.init(Model);

@@ -1,4 +1,4 @@
-define(['jquery'], function($){
+define(['jquery'], function ($) {
 	// Create a "dummy" jQuery object on which to call on, off and trigger event
 	// handlers. Note that $({}) works in jQuery 1.4.3+, but because off() (unbind) on
 	// a "plain object" throws errors in older versions of jQuery, an element is
