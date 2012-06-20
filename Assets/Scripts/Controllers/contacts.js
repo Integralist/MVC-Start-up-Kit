@@ -8,8 +8,31 @@ define(['../Controllers/Controller', '../Utils/Events/events', '../Utils/CSS/rem
 	// The views are the id attribute value for the corresponding element
 	Controller.views = ['view-contacts', 'view-add'];
 	
-	// Extend the default stub 'updateView' method
-	Controller.updateView = function (data) {
+	// Every Controller instance is provided a stubbed function called 'updateView'
+	// So here we're going to extend that stub
+	Controller.updateView = handleUpdateView;
+	
+	// An instance object (e.g. only available on this Controller instance) for handling the event listeners
+	Controller.handleEvents = {
+	
+		select: handleSelect,
+		
+		submit: handleSubmit
+		
+	};
+	
+	// An instance method (e.g. only available on this Controller instance) for setting-up event listeners for the specified View(s)
+	Controller.bindEvents = handleBindEvents;
+	
+	/********************************************************************************************************************************
+	 *
+	 * FUNCTIONS: the following are all the functions specified above
+	 * I purposely kept them separate so it was easier for someone new to the codebase to understand how the controllers worked
+	 * Otherwise assigning function expressions meant too much code was inter-mingled and it was hard to read and follow the code
+	 * 
+	 ********************************************************************************************************************************/
+	
+	function handleUpdateView (data) {
 		
 		var dfd = when.defer(),
 			doc = document;
@@ -73,129 +96,123 @@ define(['../Controllers/Controller', '../Utils/Events/events', '../Utils/CSS/rem
 	 	// we'll be using Deferreds/Promises to help keep the UI from locking up
 		return dfd.promise;
 		
-	};
+	}
 	
-	// An instance object (e.g. only available on this Controller instance) for handling the event listeners
-	Controller.handleEvents = {
-	
-		select: function (e, template) {
+	function handleSelect (e, template) {
 			
-			// Find out which Contact was selected
-			var targ = e.target,
-				id = targ.options[targ.selectedIndex].id.split('_')[1],
-				doc = document,
-				contact = doc.getElementById('tmpl_contact'),
-				self = Controller;
-			
-			// If the user has selected a non-Contact (e.g. selected the option 'Please select a user')
-			// then we need to make sure we just display nothing (or a generic message)
-			if (id === undefined) {
-				// The user can only reach this condition if they have already displayed a valid Contact
-				// so we know that we can just use innerHTML on the 'contact' variable
-				contact.innerHTML = '';
-			}
-			
-			// If we've already added a template Contact to the View then just update it
-			else if (!!contact) {
-				// Add the new template
-				contact.innerHTML = self.template(template, Controller.Model.store[id]);
-			} 
-			
-			// Otherwise this is the first time we're running this function so we need to create the Contact
-			else {
-				// Create a new element to store the template content
-				contact = doc.createElement('div');
-				
-				// We use an id to help us reference this element in the future, 
-				// so we can update it's content the next time a Contact is selected
-				contact.id = 'tmpl_contact';
-				
-				// Add the template to the containing element
-				contact.innerHTML = self.template(template, Controller.Model.store[id]);
-				
-				// Now update the View by adding the template to it
-				self.views[0].appendChild(contact);
-			}
-			
-		},
+		// Find out which Contact was selected
+		var targ = e.target,
+			id = targ.options[targ.selectedIndex].id.split('_')[1],
+			doc = document,
+			contact = doc.getElementById('tmpl_contact'),
+			self = Controller;
 		
-		submit: function (e) {
-			
-			// In this handler we validate the data entered and then 
-			// post data to server via AJAX and let server-side store posted data in database.
-			// Then on success we update our local store property (and also use localStorage if we wanted to)
-			// But because this is just an example we've not written a server-side script to store in database so we've just ignore that part.
-			
-			// Prevent the form from submitting
-			e.preventDefault();
-			
-			var errors = [],
-				form = e.target,
-				fullname = form.fullname.value,
-				age = form.age.value,
-				address = form.address.value,
-				obj = {};
-			
-			// This regex tests for a first name with at least two characters, 
-			// followed by an optional middle name with at least two characters (we use a non-capturing group to save the regex engine some work), 
-			// followed by the last name with at least two characters.
-			// This regex allows the first-middle name (and the middle-last) to be joined by a hypen (e.g. Georges St-Pierre or Georges-St Pierre)
-			if (!/[\w-]{2,}(?:\s\w{2,})?[\s-]\w{2,}/.test(fullname)) {
-				errors.push('Name was invalid');
-			} 
-			
-			// We allow ages from 1-999
-			if (!/\d{1,3}/.test(age)) {
-				errors.push('Age was invalid (should be numeric value only)');
-			}
-			
-			if (!address.length) {
-				// Provide a default for the address (mainly because it's awkward to validate this type of field)
-				address = 'No address provided';
-			}
-			
-			// If there are any errors then we can't proceed
-			if (errors.length) {
-				// If the success message (from a previous successful record added) is still visible
-				// then remove it to save from confusing the user.
-				var success;
-				if (success = document.getElementById('message-success')) {
-					Controller.views[1].removeChild(success);
-				}
-				
-				// Display errors
-				alert(errors.join('\n'));
-			} else {
-				obj.name = fullname;
-				obj.age = age;
-				obj.address = address;
-				obj.id = Controller.Model.generate_id();
-				
-				// AJAX function to post data to server-side script (for storing in db)
-				
-				// Insert the new record into the Model
-				Controller.Model.add(obj);
-				
-				// Display success message and reset the form
-				form.reset();
-				
-				// Create an element to hold our success message
-				var doc = document,
-					div = doc.createElement('div'),
-					txt = doc.createTextNode('Record added successfully!');
-				
-				div.id = 'message-success';
-					
-				div.appendChild(txt);
-				form.appendChild(div);
-			}
-			
+		// If the user has selected a non-Contact (e.g. selected the option 'Please select a user')
+		// then we need to make sure we just display nothing (or a generic message)
+		if (id === undefined) {
+			// The user can only reach this condition if they have already displayed a valid Contact
+			// so we know that we can just use innerHTML on the 'contact' variable
+			contact.innerHTML = '';
 		}
 		
-	};
+		// If we've already added a template Contact to the View then just update it
+		else if (!!contact) {
+			// Add the new template
+			contact.innerHTML = self.template(template, Controller.Model.store[id]);
+		} 
+		
+		// Otherwise this is the first time we're running this function so we need to create the Contact
+		else {
+			// Create a new element to store the template content
+			contact = doc.createElement('div');
+			
+			// We use an id to help us reference this element in the future, 
+			// so we can update it's content the next time a Contact is selected
+			contact.id = 'tmpl_contact';
+			
+			// Add the template to the containing element
+			contact.innerHTML = self.template(template, Controller.Model.store[id]);
+			
+			// Now update the View by adding the template to it
+			self.views[0].appendChild(contact);
+		}
+		
+	}
 	
-	// An instance method (e.g. only available on this Controller instance) for setting-up event listeners for the specified View(s)
-	Controller.bindEvents = function(){
+	function handleSubmit (e) {
+			
+		// In this handler we validate the data entered and then 
+		// post data to server via AJAX and let server-side store posted data in database.
+		// Then on success we update our local store property (and also use localStorage if we wanted to)
+		// But because this is just an example we've not written a server-side script to store in database so we've just ignore that part.
+		
+		// Prevent the form from submitting
+		e.preventDefault();
+		
+		var errors = [],
+			form = e.target,
+			fullname = form.fullname.value,
+			age = form.age.value,
+			address = form.address.value,
+			obj = {};
+		
+		// This regex tests for a first name with at least two characters, 
+		// followed by an optional middle name with at least two characters (we use a non-capturing group to save the regex engine some work), 
+		// followed by the last name with at least two characters.
+		// This regex allows the first-middle name (and the middle-last) to be joined by a hypen (e.g. Georges St-Pierre or Georges-St Pierre)
+		if (!/[\w-]{2,}(?:\s\w{2,})?[\s-]\w{2,}/.test(fullname)) {
+			errors.push('Name was invalid');
+		} 
+		
+		// We allow ages from 1-999
+		if (!/\d{1,3}/.test(age)) {
+			errors.push('Age was invalid (should be numeric value only)');
+		}
+		
+		if (!address.length) {
+			// Provide a default for the address (mainly because it's awkward to validate this type of field)
+			address = 'No address provided';
+		}
+		
+		// If there are any errors then we can't proceed
+		if (errors.length) {
+			// If the success message (from a previous successful record added) is still visible
+			// then remove it to save from confusing the user.
+			var success;
+			if (success = document.getElementById('message-success')) {
+				Controller.views[1].removeChild(success);
+			}
+			
+			// Display errors
+			alert(errors.join('\n'));
+		} else {
+			obj.name = fullname;
+			obj.age = age;
+			obj.address = address;
+			obj.id = Controller.Model.generate_id();
+			
+			// AJAX function to post data to server-side script (for storing in db)
+			
+			// Insert the new record into the Model
+			Controller.Model.add(obj);
+			
+			// Display success message and reset the form
+			form.reset();
+			
+			// Create an element to hold our success message
+			var doc = document,
+				div = doc.createElement('div'),
+				txt = doc.createTextNode('Record added successfully!');
+			
+			div.id = 'message-success';
+				
+			div.appendChild(txt);
+			form.appendChild(div);
+		}
+		
+	}
+	
+	function handleBindEvents(){
 		
 		var self = this,
 			ViewContact = this.views[0],
@@ -218,7 +235,11 @@ define(['../Controllers/Controller', '../Utils/Events/events', '../Utils/CSS/rem
 		
 	}
 	
-	// SUBSCRIBERS: the following are all the subscribers for this Controller/Model set-up
+	/********************************************************************************************************************************
+	 *
+	 * SUBSCRIBERS: the following are all the subscribers for this Controller/Model set-up
+	 * 
+	 ********************************************************************************************************************************/
 	
 	// A single function has subscribed to the event triggered when a new record is added
 	ps.subscribe('newrecord', newRecordData);
